@@ -32,7 +32,15 @@ const translations = {
     schelli: 'Schelli',
     kathy: 'Kathy',
     virginia: 'Virginia',
-    noEvents: 'Keine Termine'
+    noEvents: 'Keine Termine',
+    addEvent: 'Termin hinzufügen',
+    eventTitle: 'Titel',
+    eventTime: 'Uhrzeit',
+    eventDate: 'Datum',
+    eventPerson: 'Person',
+    cancel: 'Abbrechen',
+    save: 'Speichern',
+    upcomingEvents: 'Kommende Termine'
   },
   en: {
     title: "Schelli's Board",
@@ -63,7 +71,15 @@ const translations = {
     schelli: 'Schelli',
     kathy: 'Kathy',
     virginia: 'Virginia',
-    noEvents: 'No events'
+    noEvents: 'No events',
+    addEvent: 'Add Event',
+    eventTitle: 'Title',
+    eventTime: 'Time',
+    eventDate: 'Date',
+    eventPerson: 'Person',
+    cancel: 'Cancel',
+    save: 'Save',
+    upcomingEvents: 'Upcoming Events'
   }
 }
 
@@ -130,33 +146,33 @@ const mealDatabase = {
 }
 
 // Sample family events
-const generateFamilyEvents = (language) => {
+const initialFamilyEvents = (language) => {
   const events = {
     de: [
-      { date: 3, member: 'schelli', event: 'Meeting mit Team', time: '14:00', color: 'blue' },
-      { date: 5, member: 'kathy', event: 'Yoga-Kurs', time: '18:00', color: 'pink' },
-      { date: 7, member: 'virginia', event: 'Schulfest', time: '15:00', color: 'purple' },
-      { date: 10, member: 'schelli', event: 'Zahnarzt', time: '10:00', color: 'blue' },
-      { date: 12, member: 'kathy', event: 'Buchclub', time: '19:00', color: 'pink' },
-      { date: 14, member: 'virginia', event: 'Ballett-Probe', time: '16:00', color: 'purple' },
-      { date: 15, member: 'schelli', event: 'Familienessen', time: '19:00', color: 'blue' },
-      { date: 18, member: 'kathy', event: 'Friseur', time: '14:30', color: 'pink' },
-      { date: 21, member: 'virginia', event: 'Geburtstag Anna', time: '15:00', color: 'purple' },
-      { date: 25, member: 'schelli', event: 'Projekt-Deadline', time: '17:00', color: 'blue' },
-      { date: 28, member: 'kathy', event: 'Elternabend', time: '18:30', color: 'pink' }
+      { date: 3, month: 1, year: 2026, member: 'schelli', event: 'Meeting mit Team', time: '14:00' },
+      { date: 5, month: 1, year: 2026, member: 'kathy', event: 'Yoga-Kurs', time: '18:00' },
+      { date: 7, month: 1, year: 2026, member: 'virginia', event: 'Schulfest', time: '15:00' },
+      { date: 10, month: 1, year: 2026, member: 'schelli', event: 'Zahnarzt', time: '10:00' },
+      { date: 12, month: 1, year: 2026, member: 'kathy', event: 'Buchclub', time: '19:00' },
+      { date: 14, month: 1, year: 2026, member: 'virginia', event: 'Ballett-Probe', time: '16:00' },
+      { date: 15, month: 1, year: 2026, member: 'schelli', event: 'Familienessen', time: '19:00' },
+      { date: 18, month: 1, year: 2026, member: 'kathy', event: 'Friseur', time: '14:30' },
+      { date: 21, month: 1, year: 2026, member: 'virginia', event: 'Geburtstag Anna', time: '15:00' },
+      { date: 25, month: 1, year: 2026, member: 'schelli', event: 'Projekt-Deadline', time: '17:00' },
+      { date: 28, month: 1, year: 2026, member: 'kathy', event: 'Elternabend', time: '18:30' }
     ],
     en: [
-      { date: 3, member: 'schelli', event: 'Team Meeting', time: '14:00', color: 'blue' },
-      { date: 5, member: 'kathy', event: 'Yoga Class', time: '18:00', color: 'pink' },
-      { date: 7, member: 'virginia', event: 'School Festival', time: '15:00', color: 'purple' },
-      { date: 10, member: 'schelli', event: 'Dentist', time: '10:00', color: 'blue' },
-      { date: 12, member: 'kathy', event: 'Book Club', time: '19:00', color: 'pink' },
-      { date: 14, member: 'virginia', event: 'Ballet Rehearsal', time: '16:00', color: 'purple' },
-      { date: 15, member: 'schelli', event: 'Family Dinner', time: '19:00', color: 'blue' },
-      { date: 18, member: 'kathy', event: 'Hairdresser', time: '14:30', color: 'pink' },
-      { date: 21, member: 'virginia', event: "Anna's Birthday", time: '15:00', color: 'purple' },
-      { date: 25, member: 'schelli', event: 'Project Deadline', time: '17:00', color: 'blue' },
-      { date: 28, member: 'kathy', event: 'Parent Evening', time: '18:30', color: 'pink' }
+      { date: 3, month: 1, year: 2026, member: 'schelli', event: 'Team Meeting', time: '14:00' },
+      { date: 5, month: 1, year: 2026, member: 'kathy', event: 'Yoga Class', time: '18:00' },
+      { date: 7, month: 1, year: 2026, member: 'virginia', event: 'School Festival', time: '15:00' },
+      { date: 10, month: 1, year: 2026, member: 'schelli', event: 'Dentist', time: '10:00' },
+      { date: 12, month: 1, year: 2026, member: 'kathy', event: 'Book Club', time: '19:00' },
+      { date: 14, month: 1, year: 2026, member: 'virginia', event: 'Ballet Rehearsal', time: '16:00' },
+      { date: 15, month: 1, year: 2026, member: 'schelli', event: 'Family Dinner', time: '19:00' },
+      { date: 18, month: 1, year: 2026, member: 'kathy', event: 'Hairdresser', time: '14:30' },
+      { date: 21, month: 1, year: 2026, member: 'virginia', event: "Anna's Birthday", time: '15:00' },
+      { date: 25, month: 1, year: 2026, member: 'schelli', event: 'Project Deadline', time: '17:00' },
+      { date: 28, month: 1, year: 2026, member: 'kathy', event: 'Parent Evening', time: '18:30' }
     ]
   }
   return events[language]
@@ -173,6 +189,15 @@ function App() {
   const [mealPlan, setMealPlan] = useState(null)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [familyEvents, setFamilyEvents] = useState([])
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
+  const [showEventForm, setShowEventForm] = useState(false)
+  const [newEvent, setNewEvent] = useState({
+    date: 1,
+    member: 'schelli',
+    event: '',
+    time: '12:00'
+  })
 
   const t = translations[language]
 
@@ -184,7 +209,7 @@ function App() {
     fetchTasks()
     fetchWeather()
     generateWeeklyMealPlan()
-    setFamilyEvents(generateFamilyEvents(language))
+    setFamilyEvents(initialFamilyEvents(language))
 
     if (window.innerWidth >= 1024) {
       setSidebarOpen(true)
@@ -246,14 +271,11 @@ function App() {
     }
   }
 
-  const getDaysInMonth = () => {
-    const now = new Date()
-    const year = now.getFullYear()
-    const month = now.getMonth()
+  const getDaysInMonth = (month, year) => {
     const firstDay = new Date(year, month, 1).getDay()
     const daysInMonth = new Date(year, month + 1, 0).getDate()
     
-    return { firstDay, daysInMonth, month, year }
+    return { firstDay, daysInMonth }
   }
 
   const getMonthName = (month) => {
@@ -261,6 +283,46 @@ function App() {
       ? ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
       : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     return months[month]
+  }
+
+  const goToPreviousMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11)
+      setCurrentYear(currentYear - 1)
+    } else {
+      setCurrentMonth(currentMonth - 1)
+    }
+  }
+
+  const goToNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0)
+      setCurrentYear(currentYear + 1)
+    } else {
+      setCurrentMonth(currentMonth + 1)
+    }
+  }
+
+  const goToToday = () => {
+    setCurrentMonth(new Date().getMonth())
+    setCurrentYear(new Date().getFullYear())
+  }
+
+  const addEvent = () => {
+    const event = {
+      ...newEvent,
+      month: currentMonth,
+      year: currentYear,
+      id: Date.now()
+    }
+    setFamilyEvents([...familyEvents, event])
+    setShowEventForm(false)
+    setNewEvent({
+      date: 1,
+      member: 'schelli',
+      event: '',
+      time: '12:00'
+    })
   }
 
   const formatTime = (date) => {
@@ -584,22 +646,48 @@ function App() {
   )
 
   const renderCalendar = () => {
-    const { firstDay, daysInMonth, month, year } = getDaysInMonth()
+    const { firstDay, daysInMonth } = getDaysInMonth(currentMonth, currentYear)
     const today = new Date().getDate()
+    const isCurrentMonth = currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear()
     const emptyDays = Array.from({ length: firstDay === 0 ? 6 : firstDay - 1 })
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1)
 
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 lg:p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.calendar}</h2>
-              <p className="text-xs lg:text-sm text-gray-500 mt-1">{getMonthName(month)} {year}</p>
+              <p className="text-xs lg:text-sm text-gray-500 mt-1">{getMonthName(currentMonth)} {currentYear}</p>
             </div>
-            <span className="text-3xl">📅</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToPreviousMonth}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                ◀
+              </button>
+              <button
+                onClick={goToToday}
+                className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
+              >
+                {t.today}
+              </button>
+              <button
+                onClick={goToNextMonth}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                ▶
+              </button>
+              <button
+                onClick={() => setShowEventForm(true)}
+                className="ml-2 px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-medium hover:bg-blue-600 transition-colors"
+              >
+                + {t.addEvent}
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2">
             <div className="flex items-center gap-1.5 text-xs">
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
               <span className="text-gray-600">{t.schelli}</span>
@@ -614,6 +702,7 @@ function App() {
             </div>
           </div>
         </div>
+        
         <div className="p-4 lg:p-6">
           <div className="grid grid-cols-7 gap-2 mb-2">
             {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(day => (
@@ -627,8 +716,10 @@ function App() {
               <div key={`empty-${i}`} className="aspect-square"></div>
             ))}
             {days.map(day => {
-              const dayEvents = familyEvents.filter(e => e.date === day)
-              const isToday = day === today
+              const dayEvents = familyEvents.filter(e => 
+                e.date === day && e.month === currentMonth && e.year === currentYear
+              )
+              const isToday = day === today && isCurrentMonth
               
               return (
                 <div 
@@ -665,17 +756,26 @@ function App() {
           
           {/* Events List */}
           <div className="mt-6 pt-6 border-t border-gray-200">
-            <h3 className="text-sm font-bold text-gray-800 mb-3">{language === 'de' ? 'Kommende Termine' : 'Upcoming Events'}</h3>
+            <h3 className="text-sm font-bold text-gray-800 mb-3">{t.upcomingEvents}</h3>
             <div className="space-y-2">
               {familyEvents
-                .filter(e => e.date >= today)
+                .filter(e => {
+                  const eventDate = new Date(e.year, e.month, e.date)
+                  const now = new Date()
+                  return eventDate >= now
+                })
+                .sort((a, b) => {
+                  const dateA = new Date(a.year, a.month, a.date)
+                  const dateB = new Date(b.year, b.month, b.date)
+                  return dateA - dateB
+                })
                 .slice(0, 5)
                 .map((event, idx) => {
                   const colors = getMemberColor(event.member)
                   return (
                     <div key={idx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
                       <div className={`${colors.bg} ${colors.text} w-12 h-12 rounded-lg flex flex-col items-center justify-center flex-shrink-0`}>
-                        <div className="text-xs font-bold">{getMonthName(month).substring(0, 3)}</div>
+                        <div className="text-xs font-bold">{getMonthName(event.month).substring(0, 3)}</div>
                         <div className="text-lg font-bold">{event.date}</div>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -691,6 +791,80 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Add Event Modal */}
+        {showEventForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">{t.addEvent}</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.eventTitle}</label>
+                  <input
+                    type="text"
+                    value={newEvent.event}
+                    onChange={(e) => setNewEvent({...newEvent, event: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder={language === 'de' ? 'Titel eingeben...' : 'Enter title...'}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.eventPerson}</label>
+                  <select
+                    value={newEvent.member}
+                    onChange={(e) => setNewEvent({...newEvent, member: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="schelli">{t.schelli}</option>
+                    <option value="kathy">{t.kathy}</option>
+                    <option value="virginia">{t.virginia}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.eventDate}</label>
+                  <select
+                    value={newEvent.date}
+                    onChange={(e) => setNewEvent({...newEvent, date: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    {Array.from({ length: getDaysInMonth(currentMonth, currentYear).daysInMonth }, (_, i) => i + 1).map(day => (
+                      <option key={day} value={day}>{day}. {getMonthName(currentMonth)} {currentYear}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.eventTime}</label>
+                  <input
+                    type="time"
+                    value={newEvent.time}
+                    onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setShowEventForm(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  {t.cancel}
+                </button>
+                <button
+                  onClick={addEvent}
+                  disabled={!newEvent.event}
+                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  {t.save}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
