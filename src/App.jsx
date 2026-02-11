@@ -16,7 +16,18 @@ const translations = {
     noTasks: 'Keine Aufgaben',
     today: 'Heute',
     thisWeek: 'Diese Woche',
-    dashboard: 'Dashboard'
+    dashboard: 'Dashboard',
+    mealPlan: 'Essensplan',
+    breakfast: 'Frühstück',
+    lunch: 'Mittagessen',
+    dinner: 'Abendessen',
+    monday: 'Montag',
+    tuesday: 'Dienstag',
+    wednesday: 'Mittwoch',
+    thursday: 'Donnerstag',
+    friday: 'Freitag',
+    saturday: 'Samstag',
+    sunday: 'Sonntag'
   },
   en: {
     title: "Schelli's Board",
@@ -31,7 +42,80 @@ const translations = {
     noTasks: 'No tasks',
     today: 'Today',
     thisWeek: 'This Week',
-    dashboard: 'Dashboard'
+    dashboard: 'Dashboard',
+    mealPlan: 'Meal Plan',
+    breakfast: 'Breakfast',
+    lunch: 'Lunch',
+    dinner: 'Dinner',
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sunday: 'Sunday'
+  }
+}
+
+// Healthy meal database
+const mealDatabase = {
+  de: {
+    breakfast: [
+      { name: 'Haferflocken mit Beeren', emoji: '🥣', calories: 320 },
+      { name: 'Vollkorn-Toast mit Avocado', emoji: '🥑', calories: 280 },
+      { name: 'Griechischer Joghurt mit Nüssen', emoji: '🥛', calories: 250 },
+      { name: 'Smoothie Bowl', emoji: '🍓', calories: 290 },
+      { name: 'Rührei mit Gemüse', emoji: '🍳', calories: 310 },
+      { name: 'Vollkorn-Müsli', emoji: '🥣', calories: 300 },
+      { name: 'Chia-Pudding', emoji: '🥥', calories: 270 }
+    ],
+    lunch: [
+      { name: 'Quinoa-Salat mit Feta', emoji: '🥗', calories: 420 },
+      { name: 'Gegrilltes Hähnchen mit Gemüse', emoji: '🍗', calories: 450 },
+      { name: 'Lachs mit Süßkartoffeln', emoji: '🐟', calories: 480 },
+      { name: 'Veggie Bowl mit Hummus', emoji: '🥙', calories: 390 },
+      { name: 'Vollkorn-Pasta mit Tomaten', emoji: '🍝', calories: 430 },
+      { name: 'Linsensuppe', emoji: '🍲', calories: 380 },
+      { name: 'Gebratener Reis mit Tofu', emoji: '🍚', calories: 410 }
+    ],
+    dinner: [
+      { name: 'Gemüsepfanne mit Reis', emoji: '🥘', calories: 380 },
+      { name: 'Gebackener Lachs mit Brokkoli', emoji: '🐟', calories: 420 },
+      { name: 'Hähnchen-Curry', emoji: '🍛', calories: 450 },
+      { name: 'Gemüsesuppe', emoji: '🥣', calories: 280 },
+      { name: 'Gefüllte Paprika', emoji: '🫑', calories: 350 },
+      { name: 'Thunfisch-Salat', emoji: '🥗', calories: 320 },
+      { name: 'Linsen-Dal', emoji: '🍲', calories: 360 }
+    ]
+  },
+  en: {
+    breakfast: [
+      { name: 'Oatmeal with Berries', emoji: '🥣', calories: 320 },
+      { name: 'Whole Grain Toast with Avocado', emoji: '🥑', calories: 280 },
+      { name: 'Greek Yogurt with Nuts', emoji: '🥛', calories: 250 },
+      { name: 'Smoothie Bowl', emoji: '🍓', calories: 290 },
+      { name: 'Scrambled Eggs with Veggies', emoji: '🍳', calories: 310 },
+      { name: 'Whole Grain Cereal', emoji: '🥣', calories: 300 },
+      { name: 'Chia Pudding', emoji: '🥥', calories: 270 }
+    ],
+    lunch: [
+      { name: 'Quinoa Salad with Feta', emoji: '🥗', calories: 420 },
+      { name: 'Grilled Chicken with Vegetables', emoji: '🍗', calories: 450 },
+      { name: 'Salmon with Sweet Potatoes', emoji: '🐟', calories: 480 },
+      { name: 'Veggie Bowl with Hummus', emoji: '🥙', calories: 390 },
+      { name: 'Whole Grain Pasta with Tomato', emoji: '🍝', calories: 430 },
+      { name: 'Lentil Soup', emoji: '🍲', calories: 380 },
+      { name: 'Fried Rice with Tofu', emoji: '🍚', calories: 410 }
+    ],
+    dinner: [
+      { name: 'Vegetable Stir-Fry with Rice', emoji: '🥘', calories: 380 },
+      { name: 'Baked Salmon with Broccoli', emoji: '🐟', calories: 420 },
+      { name: 'Chicken Curry', emoji: '🍛', calories: 450 },
+      { name: 'Vegetable Soup', emoji: '🥣', calories: 280 },
+      { name: 'Stuffed Peppers', emoji: '🫑', calories: 350 },
+      { name: 'Tuna Salad', emoji: '🥗', calories: 320 },
+      { name: 'Lentil Dal', emoji: '🍲', calories: 360 }
+    ]
   }
 }
 
@@ -42,7 +126,8 @@ function App() {
   const [weather, setWeather] = useState(null)
   const [weatherLoading, setWeatherLoading] = useState(true)
   const [language, setLanguage] = useState('de')
-  const [sidebarOpen, setSidebarOpen] = useState(false) // Closed by default on mobile
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [mealPlan, setMealPlan] = useState(null)
 
   const t = translations[language]
 
@@ -53,6 +138,7 @@ function App() {
 
     fetchTasks()
     fetchWeather()
+    generateWeeklyMealPlan()
 
     // Open sidebar by default on desktop
     if (window.innerWidth >= 1024) {
@@ -60,7 +146,29 @@ function App() {
     }
 
     return () => clearInterval(timer)
-  }, [])
+  }, [language])
+
+  const generateWeeklyMealPlan = () => {
+    const meals = mealDatabase[language]
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    
+    // Use current week number as seed for consistency
+    const now = new Date()
+    const startOfYear = new Date(now.getFullYear(), 0, 1)
+    const weekNumber = Math.ceil((((now - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7)
+    
+    const plan = {}
+    days.forEach((day, index) => {
+      const seed = weekNumber + index
+      plan[day] = {
+        breakfast: meals.breakfast[seed % meals.breakfast.length],
+        lunch: meals.lunch[(seed + 1) % meals.lunch.length],
+        dinner: meals.dinner[(seed + 2) % meals.dinner.length]
+      }
+    })
+    
+    setMealPlan(plan)
+  }
 
   const fetchWeather = async () => {
     try {
@@ -109,6 +217,11 @@ function App() {
       month: 'long', 
       day: 'numeric' 
     })
+  }
+
+  const getCurrentDayOfWeek = () => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    return days[new Date().getDay()]
   }
 
   const getPriorityColor = (priority) => {
@@ -206,6 +319,11 @@ function App() {
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
             <span className="text-xl">✅</span>
             <span className="font-medium text-sm lg:text-base">{t.tasks}</span>
+          </button>
+
+          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+            <span className="text-xl">🍽️</span>
+            <span className="font-medium text-sm lg:text-base">{t.mealPlan}</span>
           </button>
           
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
@@ -370,6 +488,77 @@ function App() {
               </div>
             </div>
           </div>
+
+          {/* Weekly Meal Plan */}
+          {mealPlan && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-4 lg:p-6 border-b border-gray-200 flex items-center justify-between">
+                <div>
+                  <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.mealPlan}</h2>
+                  <p className="text-xs lg:text-sm text-gray-500 mt-1">{t.thisWeek}</p>
+                </div>
+                <span className="text-3xl">🍽️</span>
+              </div>
+              <div className="p-4 lg:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-3 lg:gap-4">
+                  {Object.keys(mealPlan).map(day => {
+                    const isToday = day === getCurrentDayOfWeek()
+                    return (
+                      <div 
+                        key={day}
+                        className={`p-3 lg:p-4 rounded-xl border-2 ${
+                          isToday 
+                            ? 'border-blue-500 bg-blue-50' 
+                            : 'border-gray-200 bg-white'
+                        } transition-all hover:shadow-md`}
+                      >
+                        <h3 className={`text-xs lg:text-sm font-bold mb-3 ${
+                          isToday ? 'text-blue-600' : 'text-gray-700'
+                        }`}>
+                          {isToday && '● '}{t[day]}
+                        </h3>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2">
+                            <span className="text-lg">{mealPlan[day].breakfast.emoji}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-600">{t.breakfast}</p>
+                              <p className="text-xs text-gray-800 line-clamp-2">{mealPlan[day].breakfast.name}</p>
+                              <p className="text-xs text-gray-500">{mealPlan[day].breakfast.calories} kcal</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-start gap-2">
+                            <span className="text-lg">{mealPlan[day].lunch.emoji}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-600">{t.lunch}</p>
+                              <p className="text-xs text-gray-800 line-clamp-2">{mealPlan[day].lunch.name}</p>
+                              <p className="text-xs text-gray-500">{mealPlan[day].lunch.calories} kcal</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-start gap-2">
+                            <span className="text-lg">{mealPlan[day].dinner.emoji}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-600">{t.dinner}</p>
+                              <p className="text-xs text-gray-800 line-clamp-2">{mealPlan[day].dinner.name}</p>
+                              <p className="text-xs text-gray-500">{mealPlan[day].dinner.calories} kcal</p>
+                            </div>
+                          </div>
+                          
+                          <div className="pt-2 border-t border-gray-200">
+                            <p className="text-xs font-semibold text-gray-700">
+                              {mealPlan[day].breakfast.calories + mealPlan[day].lunch.calories + mealPlan[day].dinner.calories} kcal/Tag
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Tasks List */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
