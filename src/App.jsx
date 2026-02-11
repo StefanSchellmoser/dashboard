@@ -40,7 +40,9 @@ const translations = {
     eventPerson: 'Person',
     cancel: 'Abbrechen',
     save: 'Speichern',
-    upcomingEvents: 'Kommende Termine'
+    upcomingEvents: 'Kommende Termine',
+    todaysMeals: 'Heutiger Essensplan',
+    noEventsToday: 'Keine Termine heute'
   },
   en: {
     title: "Schelli's Board",
@@ -79,7 +81,9 @@ const translations = {
     eventPerson: 'Person',
     cancel: 'Cancel',
     save: 'Save',
-    upcomingEvents: 'Upcoming Events'
+    upcomingEvents: 'Upcoming Events',
+    todaysMeals: "Today's Meals",
+    noEventsToday: 'No events today'
   }
 }
 
@@ -149,12 +153,12 @@ const mealDatabase = {
 const initialFamilyEvents = (language) => {
   const events = {
     de: [
-      { date: 3, month: 1, year: 2026, member: 'schelli', event: 'Meeting mit Team', time: '14:00' },
-      { date: 5, month: 1, year: 2026, member: 'kathy', event: 'Yoga-Kurs', time: '18:00' },
-      { date: 7, month: 1, year: 2026, member: 'virginia', event: 'Schulfest', time: '15:00' },
-      { date: 10, month: 1, year: 2026, member: 'schelli', event: 'Zahnarzt', time: '10:00' },
-      { date: 12, month: 1, year: 2026, member: 'kathy', event: 'Buchclub', time: '19:00' },
-      { date: 14, month: 1, year: 2026, member: 'virginia', event: 'Ballett-Probe', time: '16:00' },
+      { date: 11, month: 1, year: 2026, member: 'schelli', event: 'Meeting mit Team', time: '14:00' },
+      { date: 11, month: 1, year: 2026, member: 'kathy', event: 'Yoga-Kurs', time: '18:00' },
+      { date: 12, month: 1, year: 2026, member: 'virginia', event: 'Schulfest', time: '15:00' },
+      { date: 13, month: 1, year: 2026, member: 'schelli', event: 'Zahnarzt', time: '10:00' },
+      { date: 14, month: 1, year: 2026, member: 'kathy', event: 'Buchclub', time: '19:00' },
+      { date: 15, month: 1, year: 2026, member: 'virginia', event: 'Ballett-Probe', time: '16:00' },
       { date: 15, month: 1, year: 2026, member: 'schelli', event: 'Familienessen', time: '19:00' },
       { date: 18, month: 1, year: 2026, member: 'kathy', event: 'Friseur', time: '14:30' },
       { date: 21, month: 1, year: 2026, member: 'virginia', event: 'Geburtstag Anna', time: '15:00' },
@@ -162,12 +166,12 @@ const initialFamilyEvents = (language) => {
       { date: 28, month: 1, year: 2026, member: 'kathy', event: 'Elternabend', time: '18:30' }
     ],
     en: [
-      { date: 3, month: 1, year: 2026, member: 'schelli', event: 'Team Meeting', time: '14:00' },
-      { date: 5, month: 1, year: 2026, member: 'kathy', event: 'Yoga Class', time: '18:00' },
-      { date: 7, month: 1, year: 2026, member: 'virginia', event: 'School Festival', time: '15:00' },
-      { date: 10, month: 1, year: 2026, member: 'schelli', event: 'Dentist', time: '10:00' },
-      { date: 12, month: 1, year: 2026, member: 'kathy', event: 'Book Club', time: '19:00' },
-      { date: 14, month: 1, year: 2026, member: 'virginia', event: 'Ballet Rehearsal', time: '16:00' },
+      { date: 11, month: 1, year: 2026, member: 'schelli', event: 'Team Meeting', time: '14:00' },
+      { date: 11, month: 1, year: 2026, member: 'kathy', event: 'Yoga Class', time: '18:00' },
+      { date: 12, month: 1, year: 2026, member: 'virginia', event: 'School Festival', time: '15:00' },
+      { date: 13, month: 1, year: 2026, member: 'schelli', event: 'Dentist', time: '10:00' },
+      { date: 14, month: 1, year: 2026, member: 'kathy', event: 'Book Club', time: '19:00' },
+      { date: 15, month: 1, year: 2026, member: 'virginia', event: 'Ballet Rehearsal', time: '16:00' },
       { date: 15, month: 1, year: 2026, member: 'schelli', event: 'Family Dinner', time: '19:00' },
       { date: 18, month: 1, year: 2026, member: 'kathy', event: 'Hairdresser', time: '14:30' },
       { date: 21, month: 1, year: 2026, member: 'virginia', event: "Anna's Birthday", time: '15:00' },
@@ -308,6 +312,16 @@ function App() {
     setCurrentYear(new Date().getFullYear())
   }
 
+  const openEventForm = (day) => {
+    setNewEvent({
+      date: day,
+      member: 'schelli',
+      event: '',
+      time: '12:00'
+    })
+    setShowEventForm(true)
+  }
+
   const addEvent = () => {
     const event = {
       ...newEvent,
@@ -323,6 +337,29 @@ function App() {
       event: '',
       time: '12:00'
     })
+  }
+
+  const getUpcomingEvents = () => {
+    const now = new Date()
+    return familyEvents
+      .filter(e => {
+        const eventDate = new Date(e.year, e.month, e.date)
+        return eventDate >= now
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.year, a.month, a.date)
+        const dateB = new Date(b.year, b.month, b.date)
+        if (dateA.getTime() === dateB.getTime()) {
+          return a.time.localeCompare(b.time)
+        }
+        return dateA - dateB
+      })
+      .slice(0, 5)
+  }
+
+  const getTodaysMeals = () => {
+    const dayOfWeek = getCurrentDayOfWeek()
+    return mealPlan ? mealPlan[dayOfWeek] : null
   }
 
   const formatTime = (date) => {
@@ -391,9 +428,9 @@ function App() {
 
   const getMemberColor = (member) => {
     const colors = {
-      schelli: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300' },
-      kathy: { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-300' },
-      virginia: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300' }
+      schelli: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300', dot: 'bg-blue-500' },
+      kathy: { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-300', dot: 'bg-pink-500' },
+      virginia: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300', dot: 'bg-purple-500' }
     }
     return colors[member]
   }
@@ -406,122 +443,213 @@ function App() {
     setSidebarOpen(!sidebarOpen)
   }
 
-  const renderDashboard = () => (
-    <div className="space-y-4 lg:space-y-6">
-      {/* Hero Card */}
-      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6 lg:p-8 text-white shadow-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl lg:text-3xl font-bold mb-2">
-              {formatTime(currentTime)}
-            </h2>
-            <p className="text-blue-100 text-sm lg:text-base">
-              {tasks.filter(t => !t.completed).length} {t.open.toLowerCase()} · {tasks.filter(t => t.completed).length} {t.completed.toLowerCase()}
-            </p>
+  const renderDashboard = () => {
+    const todaysMeals = getTodaysMeals()
+    const upcomingEvents = getUpcomingEvents()
+
+    return (
+      <div className="space-y-4 lg:space-y-6">
+        {/* Hero Card */}
+        <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6 lg:p-8 text-white shadow-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl lg:text-3xl font-bold mb-2">
+                {formatTime(currentTime)}
+              </h2>
+              <p className="text-blue-100 text-sm lg:text-base">
+                {tasks.filter(t => !t.completed).length} {t.open.toLowerCase()} · {tasks.filter(t => t.completed).length} {t.completed.toLowerCase()}
+              </p>
+            </div>
+            <div className="w-16 h-16 lg:w-24 lg:h-24 bg-white/20 rounded-full flex items-center justify-center text-4xl lg:text-6xl backdrop-blur-sm">
+              ⏰
+            </div>
           </div>
-          <div className="w-16 h-16 lg:w-24 lg:h-24 bg-white/20 rounded-full flex items-center justify-center text-4xl lg:text-6xl backdrop-blur-sm">
-            ⏰
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          {/* Weather Card */}
+          <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-3 lg:mb-4">
+              <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.weather}</h3>
+              <span className="px-2 lg:px-3 py-1 bg-cyan-50 text-cyan-600 rounded-full text-xs font-medium">
+                Rosenheim
+              </span>
+            </div>
+            {weatherLoading ? (
+              <div className="flex items-center justify-center h-20 lg:h-24">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+              </div>
+            ) : weather ? (
+              <div className="text-center">
+                <div className="text-4xl lg:text-5xl mb-2">{getWeatherIcon(weather.weathercode)}</div>
+                <div className="text-2xl lg:text-3xl font-bold text-gray-800 mb-1">
+                  {Math.round(weather.temperature)}°C
+                </div>
+                <div className="text-xs lg:text-sm text-gray-500">
+                  {getWeatherDescription(weather.weathercode)}
+                </div>
+                <div className="mt-2 lg:mt-3 pt-2 lg:pt-3 border-t border-gray-100 text-xs text-gray-500">
+                  💨 {Math.round(weather.windspeed)} km/h
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          {/* Total Tasks */}
+          <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-3 lg:mb-4">
+              <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.total}</h3>
+              <span className="px-2 lg:px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium">
+                {t.today}
+              </span>
+            </div>
+            <div className="text-3xl lg:text-4xl font-bold text-gray-800 mb-1">
+              {tasks.length}
+            </div>
+            <div className="text-xs lg:text-sm text-gray-500">
+              {t.tasks}
+            </div>
+            <div className="mt-3 lg:mt-4 pt-3 lg:pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-green-600 font-medium">↗ +2</span>
+                <span className="text-gray-500">{t.thisWeek}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Completed */}
+          <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-3 lg:mb-4">
+              <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.completed}</h3>
+              <span className="px-2 lg:px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
+                ✓
+              </span>
+            </div>
+            <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-1">
+              {tasks.filter(t => t.completed).length}
+            </div>
+            <div className="text-xs lg:text-sm text-gray-500">
+              {Math.round((tasks.filter(t => t.completed).length / Math.max(tasks.length, 1)) * 100)}% {t.completed.toLowerCase()}
+            </div>
+            <div className="mt-3 lg:mt-4 h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-green-500 rounded-full transition-all"
+                style={{ width: `${(tasks.filter(t => t.completed).length / Math.max(tasks.length, 1)) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Open */}
+          <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-3 lg:mb-4">
+              <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.open}</h3>
+              <span className="px-2 lg:px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium">
+                ⏳
+              </span>
+            </div>
+            <div className="text-3xl lg:text-4xl font-bold text-orange-600 mb-1">
+              {tasks.filter(t => !t.completed).length}
+            </div>
+            <div className="text-xs lg:text-sm text-gray-500">
+              {t.tasks} {t.open.toLowerCase()}
+            </div>
+            <div className="mt-3 lg:mt-4 pt-3 lg:pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-orange-600 font-medium">● Aktiv</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Today's Meals */}
+        {todaysMeals && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-4 lg:p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.todaysMeals}</h2>
+                <span className="text-2xl">🍽️</span>
+              </div>
+            </div>
+            <div className="p-4 lg:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-xl bg-orange-50 border border-orange-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-3xl">{todaysMeals.breakfast.emoji}</span>
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-700">{t.breakfast}</h3>
+                      <p className="text-xs text-gray-500">{todaysMeals.breakfast.calories} kcal</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-800">{todaysMeals.breakfast.name}</p>
+                </div>
+                
+                <div className="p-4 rounded-xl bg-green-50 border border-green-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-3xl">{todaysMeals.lunch.emoji}</span>
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-700">{t.lunch}</h3>
+                      <p className="text-xs text-gray-500">{todaysMeals.lunch.calories} kcal</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-800">{todaysMeals.lunch.name}</p>
+                </div>
+                
+                <div className="p-4 rounded-xl bg-blue-50 border border-blue-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-3xl">{todaysMeals.dinner.emoji}</span>
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-700">{t.dinner}</h3>
+                      <p className="text-xs text-gray-500">{todaysMeals.dinner.calories} kcal</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-800">{todaysMeals.dinner.name}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Upcoming Events */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="p-4 lg:p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.upcomingEvents}</h2>
+              <span className="text-2xl">📅</span>
+            </div>
+          </div>
+          <div className="p-4 lg:p-6">
+            {upcomingEvents.length === 0 ? (
+              <p className="text-center text-gray-500 py-8">{t.noEventsToday}</p>
+            ) : (
+              <div className="space-y-3">
+                {upcomingEvents.map((event, idx) => {
+                  const colors = getMemberColor(event.member)
+                  return (
+                    <div key={idx} className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 border border-gray-200">
+                      <div className={`${colors.bg} ${colors.text} w-16 h-16 rounded-xl flex flex-col items-center justify-center flex-shrink-0`}>
+                        <div className="text-xs font-bold">{getMonthName(event.month).substring(0, 3)}</div>
+                        <div className="text-2xl font-bold">{event.date}</div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`w-2 h-2 rounded-full ${colors.dot}`}></div>
+                          <span className={`text-sm font-medium ${colors.text}`}>{t[event.member]}</span>
+                          <span className="text-sm text-gray-500">•</span>
+                          <span className="text-sm font-medium text-gray-700">{event.time}</span>
+                        </div>
+                        <p className="text-base font-semibold text-gray-800">{event.event}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-        {/* Weather Card */}
-        <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-3 lg:mb-4">
-            <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.weather}</h3>
-            <span className="px-2 lg:px-3 py-1 bg-cyan-50 text-cyan-600 rounded-full text-xs font-medium">
-              Rosenheim
-            </span>
-          </div>
-          {weatherLoading ? (
-            <div className="flex items-center justify-center h-20 lg:h-24">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
-            </div>
-          ) : weather ? (
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl mb-2">{getWeatherIcon(weather.weathercode)}</div>
-              <div className="text-2xl lg:text-3xl font-bold text-gray-800 mb-1">
-                {Math.round(weather.temperature)}°C
-              </div>
-              <div className="text-xs lg:text-sm text-gray-500">
-                {getWeatherDescription(weather.weathercode)}
-              </div>
-              <div className="mt-2 lg:mt-3 pt-2 lg:pt-3 border-t border-gray-100 text-xs text-gray-500">
-                💨 {Math.round(weather.windspeed)} km/h
-              </div>
-            </div>
-          ) : null}
-        </div>
-
-        {/* Total Tasks */}
-        <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-3 lg:mb-4">
-            <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.total}</h3>
-            <span className="px-2 lg:px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium">
-              {t.today}
-            </span>
-          </div>
-          <div className="text-3xl lg:text-4xl font-bold text-gray-800 mb-1">
-            {tasks.length}
-          </div>
-          <div className="text-xs lg:text-sm text-gray-500">
-            {t.tasks}
-          </div>
-          <div className="mt-3 lg:mt-4 pt-3 lg:pt-4 border-t border-gray-100">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-green-600 font-medium">↗ +2</span>
-              <span className="text-gray-500">{t.thisWeek}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Completed */}
-        <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-3 lg:mb-4">
-            <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.completed}</h3>
-            <span className="px-2 lg:px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
-              ✓
-            </span>
-          </div>
-          <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-1">
-            {tasks.filter(t => t.completed).length}
-          </div>
-          <div className="text-xs lg:text-sm text-gray-500">
-            {Math.round((tasks.filter(t => t.completed).length / Math.max(tasks.length, 1)) * 100)}% {t.completed.toLowerCase()}
-          </div>
-          <div className="mt-3 lg:mt-4 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-green-500 rounded-full transition-all"
-              style={{ width: `${(tasks.filter(t => t.completed).length / Math.max(tasks.length, 1)) * 100}%` }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Open */}
-        <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-3 lg:mb-4">
-            <h3 className="text-xs lg:text-sm font-semibold text-gray-600">{t.open}</h3>
-            <span className="px-2 lg:px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-medium">
-              ⏳
-            </span>
-          </div>
-          <div className="text-3xl lg:text-4xl font-bold text-orange-600 mb-1">
-            {tasks.filter(t => !t.completed).length}
-          </div>
-          <div className="text-xs lg:text-sm text-gray-500">
-            {t.tasks} {t.open.toLowerCase()}
-          </div>
-          <div className="mt-3 lg:mt-4 pt-3 lg:pt-4 border-t border-gray-100">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-orange-600 font-medium">● Aktiv</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+    )
+  }
 
   const renderTasks = () => (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -656,38 +784,31 @@ function App() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 lg:p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.calendar}</h2>
-              <p className="text-xs lg:text-sm text-gray-500 mt-1">{getMonthName(currentMonth)} {currentYear}</p>
-            </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button
                 onClick={goToPreviousMonth}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors text-xl font-bold"
               >
                 ◀
               </button>
               <button
-                onClick={goToToday}
-                className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
-              >
-                {t.today}
-              </button>
-              <button
                 onClick={goToNextMonth}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors text-xl font-bold"
               >
                 ▶
               </button>
               <button
-                onClick={() => setShowEventForm(true)}
-                className="ml-2 px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-medium hover:bg-blue-600 transition-colors"
+                onClick={goToToday}
+                className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
               >
-                + {t.addEvent}
+                {t.today}
               </button>
             </div>
+            <div>
+              <h2 className="text-base lg:text-lg font-bold text-gray-800 text-right">{getMonthName(currentMonth)} {currentYear}</h2>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <div className="flex items-center gap-1.5 text-xs">
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
               <span className="text-gray-600">{t.schelli}</span>
@@ -716,35 +837,36 @@ function App() {
               <div key={`empty-${i}`} className="aspect-square"></div>
             ))}
             {days.map(day => {
-              const dayEvents = familyEvents.filter(e => 
-                e.date === day && e.month === currentMonth && e.year === currentYear
-              )
+              const dayEvents = familyEvents
+                .filter(e => e.date === day && e.month === currentMonth && e.year === currentYear)
+                .sort((a, b) => a.time.localeCompare(b.time))
               const isToday = day === today && isCurrentMonth
               
               return (
                 <div 
                   key={day}
-                  className={`aspect-square p-1 lg:p-2 rounded-lg border ${
+                  onClick={() => openEventForm(day)}
+                  className={`aspect-square p-2 rounded-lg border cursor-pointer ${
                     isToday 
                       ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 bg-white'
+                      : 'border-gray-200 bg-white hover:bg-gray-50'
                   } hover:shadow-md transition-all`}
                 >
-                  <div className={`text-xs lg:text-sm font-semibold mb-1 ${
+                  <div className={`text-sm font-semibold mb-1 ${
                     isToday ? 'text-blue-600' : 'text-gray-700'
                   }`}>
                     {day}
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-1 overflow-hidden">
                     {dayEvents.map((event, idx) => {
                       const colors = getMemberColor(event.member)
                       return (
                         <div 
                           key={idx}
-                          className={`${colors.bg} ${colors.text} text-xs px-1 py-0.5 rounded truncate`}
-                          title={`${t[event.member]}: ${event.event} (${event.time})`}
+                          className={`${colors.bg} ${colors.text} text-xs px-1.5 py-0.5 rounded`}
                         >
-                          {event.time}
+                          <div className="font-semibold truncate">{event.time}</div>
+                          <div className="truncate">{event.event}</div>
                         </div>
                       )
                     })}
@@ -753,50 +875,15 @@ function App() {
               )
             })}
           </div>
-          
-          {/* Events List */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <h3 className="text-sm font-bold text-gray-800 mb-3">{t.upcomingEvents}</h3>
-            <div className="space-y-2">
-              {familyEvents
-                .filter(e => {
-                  const eventDate = new Date(e.year, e.month, e.date)
-                  const now = new Date()
-                  return eventDate >= now
-                })
-                .sort((a, b) => {
-                  const dateA = new Date(a.year, a.month, a.date)
-                  const dateB = new Date(b.year, b.month, b.date)
-                  return dateA - dateB
-                })
-                .slice(0, 5)
-                .map((event, idx) => {
-                  const colors = getMemberColor(event.member)
-                  return (
-                    <div key={idx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
-                      <div className={`${colors.bg} ${colors.text} w-12 h-12 rounded-lg flex flex-col items-center justify-center flex-shrink-0`}>
-                        <div className="text-xs font-bold">{getMonthName(event.month).substring(0, 3)}</div>
-                        <div className="text-lg font-bold">{event.date}</div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs font-medium ${colors.text}`}>{t[event.member]}</span>
-                          <span className="text-xs text-gray-500">{event.time}</span>
-                        </div>
-                        <p className="text-sm font-medium text-gray-800">{event.event}</p>
-                      </div>
-                    </div>
-                  )
-                })}
-            </div>
-          </div>
         </div>
 
         {/* Add Event Modal */}
         {showEventForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">{t.addEvent}</h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                {t.addEvent} - {newEvent.date}. {getMonthName(currentMonth)} {currentYear}
+              </h3>
               
               <div className="space-y-4">
                 <div>
@@ -820,19 +907,6 @@ function App() {
                     <option value="schelli">{t.schelli}</option>
                     <option value="kathy">{t.kathy}</option>
                     <option value="virginia">{t.virginia}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.eventDate}</label>
-                  <select
-                    value={newEvent.date}
-                    onChange={(e) => setNewEvent({...newEvent, date: parseInt(e.target.value)})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {Array.from({ length: getDaysInMonth(currentMonth, currentYear).daysInMonth }, (_, i) => i + 1).map(day => (
-                      <option key={day} value={day}>{day}. {getMonthName(currentMonth)} {currentYear}</option>
-                    ))}
                   </select>
                 </div>
 
