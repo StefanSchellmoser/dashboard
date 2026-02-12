@@ -27,3 +27,12 @@ export const generateWeeklyMealPlan = (language) => {
   
   return plan
 }
+
+/**
+ * Get current day of week as string key
+ * @returns {string} Day name (lowercase)
+ */
+export const getCurrentDayOfWeek = () => {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  return days[new Date().getDay()]
+}
