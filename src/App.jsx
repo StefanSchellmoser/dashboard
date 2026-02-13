@@ -42,7 +42,17 @@ const translations = {
     save: 'Speichern',
     upcomingEvents: 'Kommende Termine',
     todaysMeals: 'Heutiger Essensplan',
-    noEventsToday: 'Keine Termine heute'
+    noEventsToday: 'Keine Termine heute',
+    announcements: 'Mitteilungen',
+    newAnnouncement: 'Neue Mitteilung',
+    announcementMessage: 'Nachricht',
+    announcementFrom: 'Von',
+    announcementTo: 'An',
+    send: 'Senden',
+    noAnnouncements: 'Keine Mitteilungen',
+    latestAnnouncement: 'Neueste Mitteilung',
+    everyone: 'Alle',
+    announcementPlaceholder: 'Nachricht eingeben...'
   },
   en: {
     title: "Schelli's Board",
@@ -83,7 +93,17 @@ const translations = {
     save: 'Save',
     upcomingEvents: 'Upcoming Events',
     todaysMeals: "Today's Meals",
-    noEventsToday: 'No events today'
+    noEventsToday: 'No events today',
+    announcements: 'Announcements',
+    newAnnouncement: 'New Announcement',
+    announcementMessage: 'Message',
+    announcementFrom: 'From',
+    announcementTo: 'To',
+    send: 'Send',
+    noAnnouncements: 'No announcements',
+    latestAnnouncement: 'Latest Announcement',
+    everyone: 'Everyone',
+    announcementPlaceholder: 'Enter message...'
   }
 }
 
@@ -201,6 +221,12 @@ function App() {
     member: 'schelli',
     event: '',
     time: '12:00'
+  })
+  const [announcements, setAnnouncements] = useState([])
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    message: '',
+    from: 'schelli',
+    to: 'everyone'
   })
 
   const t = translations[language]
@@ -337,6 +363,19 @@ function App() {
       event: '',
       time: '12:00'
     })
+  }
+
+  const addAnnouncement = () => {
+    if (!newAnnouncement.message.trim()) return
+    const announcement = {
+      id: Date.now(),
+      message: newAnnouncement.message.trim(),
+      from: newAnnouncement.from,
+      to: newAnnouncement.to,
+      timestamp: new Date()
+    }
+    setAnnouncements([announcement, ...announcements])
+    setNewAnnouncement({ message: '', from: 'schelli', to: 'everyone' })
   }
 
   const getUpcomingEvents = () => {
@@ -561,6 +600,40 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Latest Announcement */}
+        {announcements.length > 0 && (() => {
+          const latest = announcements[0]
+          const fromColors = getMemberColor(latest.from)
+          return (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-4 lg:p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.latestAnnouncement}</h2>
+                  <span className="text-2xl">📢</span>
+                </div>
+              </div>
+              <div className="p-4 lg:p-6">
+                <div className="p-4 rounded-xl bg-yellow-50 border border-yellow-200">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-2 h-2 rounded-full ${fromColors.dot}`}></div>
+                    <span className={`text-sm font-medium ${fromColors.text}`}>{t[latest.from]}</span>
+                    <span className="text-sm text-gray-400">→</span>
+                    <span className="text-sm font-medium text-gray-600">
+                      {latest.to === 'everyone' ? t.everyone : t[latest.to]}
+                    </span>
+                    <span className="text-xs text-gray-400 ml-auto">
+                      {latest.timestamp.toLocaleString(language === 'de' ? 'de-DE' : 'en-US', {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-800">{latest.message}</p>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Today's Meals */}
         {todaysMeals && (
@@ -943,6 +1016,99 @@ function App() {
     )
   }
 
+  const renderAnnouncements = () => (
+    <div className="space-y-4 lg:space-y-6">
+      {/* New Announcement Form */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-4 lg:p-6 border-b border-gray-200">
+          <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.newAnnouncement}</h2>
+        </div>
+        <div className="p-4 lg:p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t.announcementMessage}</label>
+            <textarea
+              value={newAnnouncement.message}
+              onChange={(e) => setNewAnnouncement({...newAnnouncement, message: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              rows={3}
+              placeholder={t.announcementPlaceholder}
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t.announcementFrom}</label>
+              <select
+                value={newAnnouncement.from}
+                onChange={(e) => setNewAnnouncement({...newAnnouncement, from: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="schelli">{t.schelli}</option>
+                <option value="kathy">{t.kathy}</option>
+                <option value="virginia">{t.virginia}</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t.announcementTo}</label>
+              <select
+                value={newAnnouncement.to}
+                onChange={(e) => setNewAnnouncement({...newAnnouncement, to: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="everyone">{t.everyone}</option>
+                <option value="schelli">{t.schelli}</option>
+                <option value="kathy">{t.kathy}</option>
+                <option value="virginia">{t.virginia}</option>
+              </select>
+            </div>
+          </div>
+          <button
+            onClick={addAnnouncement}
+            disabled={!newAnnouncement.message.trim()}
+            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium text-sm"
+          >
+            {t.send}
+          </button>
+        </div>
+      </div>
+
+      {/* Announcements List */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-4 lg:p-6 border-b border-gray-200">
+          <h2 className="text-base lg:text-lg font-bold text-gray-800">{t.announcements}</h2>
+        </div>
+        <div className="p-4 lg:p-6">
+          {announcements.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">{t.noAnnouncements}</p>
+          ) : (
+            <div className="space-y-3">
+              {announcements.map(a => {
+                const fromColors = getMemberColor(a.from)
+                return (
+                  <div key={a.id} className="p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-2 h-2 rounded-full ${fromColors.dot}`}></div>
+                      <span className={`text-sm font-medium ${fromColors.text}`}>{t[a.from]}</span>
+                      <span className="text-sm text-gray-400">→</span>
+                      <span className="text-sm font-medium text-gray-600">
+                        {a.to === 'everyone' ? t.everyone : t[a.to]}
+                      </span>
+                      <span className="text-xs text-gray-400 ml-auto">
+                        {a.timestamp.toLocaleString(language === 'de' ? 'de-DE' : 'en-US', {
+                          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-800">{a.message}</p>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Mobile Overlay */}
@@ -1016,16 +1182,28 @@ function App() {
             <span className="font-medium text-sm lg:text-base">{t.mealPlan}</span>
           </button>
 
-          <button 
+          <button
             onClick={() => { setActiveTab('calendar'); if (window.innerWidth < 1024) setSidebarOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeTab === 'calendar' 
-                ? 'bg-blue-50 text-blue-600' 
+              activeTab === 'calendar'
+                ? 'bg-blue-50 text-blue-600'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <span className="text-xl">📅</span>
             <span className="font-medium text-sm lg:text-base">{t.calendar}</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('announcements'); if (window.innerWidth < 1024) setSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'announcements'
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <span className="text-xl">📢</span>
+            <span className="font-medium text-sm lg:text-base">{t.announcements}</span>
           </button>
         </nav>
       </aside>
@@ -1072,6 +1250,7 @@ function App() {
           {activeTab === 'tasks' && renderTasks()}
           {activeTab === 'mealPlan' && renderMealPlan()}
           {activeTab === 'calendar' && renderCalendar()}
+          {activeTab === 'announcements' && renderAnnouncements()}
         </div>
       </main>
     </div>
